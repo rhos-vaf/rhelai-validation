@@ -1,0 +1,2 @@
+[target_nodes]
+rhelai0 ansible_host=192.168.122.222 ansible_user=cloud-user ansible_ssh_private_key_file=~/.ssh/rhel-ai.pem dns_server=192.168.122.1

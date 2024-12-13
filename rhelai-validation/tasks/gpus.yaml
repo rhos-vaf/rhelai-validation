@@ -1,0 +1,21 @@
+---
+- name: Install pciutils package
+  ansible.builtin.dnf:
+    name: pciutils
+    state: present
+
+- name: Run lspci command and save output
+  command: lspci -nn
+  register: lspci_output
+
+- name: Ensure all GPUs are present in the RHEL AI instance
+  ansible.builtin.assert:
+    that:
+      - " item | string in lspci_output.stdout"
+    msg: "The GPU '{{ item }}' was not found in the instance!"
+  loop: "{{ pci_devices }}"
+
+- name: Set found_nvidia to true if NVIDIA is found
+  set_fact:
+    found_nvidia: true
+  when: lspci_output.stdout is search("NVIDIA")

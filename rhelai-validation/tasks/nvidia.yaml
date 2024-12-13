@@ -1,0 +1,13 @@
+---
+- name: Run nvidia-smi to list NVIDIA GPUs and count them
+  shell: "nvidia-smi --list-gpus | wc -l"
+  register: nvidia_gpu_count
+  changed_when: false
+  when: found_nvidia | default(false)
+
+- name: Fail if no NVIDIA GPUs are present in nvidia-smi
+  fail:
+    msg: "No NVIDIA GPUs found in nvidia-smi command!"
+  when: 
+    - found_nvidia | default(false)
+    - nvidia_gpu_count.stdout|int <= 0

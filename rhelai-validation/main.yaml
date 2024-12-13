@@ -1,0 +1,16 @@
+---
+- name: RHEL AI Validation Playbook
+  hosts: target_nodes
+  become: true
+  tasks:
+    - name: Check DNS entry
+      import_tasks: tasks/dns.yaml
+
+    - name: Check GPUs
+      import_tasks: tasks/gpus.yaml
+
+    - name: Check iLab
+      import_tasks: tasks/ilab.yaml
+
+    - name: Check NVIDIA
+      import_tasks: tasks/nvidia.yaml

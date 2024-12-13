@@ -1,0 +1,20 @@
+---
+- name: Create /etc/ilab
+  file:
+    path: /etc/ilab
+    state: directory
+
+- name: Opt-out of Insights to use iLab
+  file:
+    path: /etc/ilab/insights-opt-out
+    state: touch
+
+- name: Run ilab system info to verify it works
+  command: ilab system info
+  register: ilab_sys_info_result
+  failed_when: ilab_sys_info_result.rc != 0
+
+- name: Clean-up iLab Insights config
+  file:
+    path: /etc/ilab
+    state: absent
