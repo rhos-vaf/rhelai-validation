@@ -12,5 +12,5 @@
 - name: Copy scripts from local to RHEL AI machine
   copy:
     src: "{{ playbook_dir }}/scripts"
-    dest: "/tmp/scripts"
-  delegate_to: localhost
+    dest: "/tmp"
+    mode: '1777'
