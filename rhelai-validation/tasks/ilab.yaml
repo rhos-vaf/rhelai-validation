@@ -3,3 +3,8 @@
   command: ilab system info
   register: ilab_sys_info_result
   failed_when: ilab_sys_info_result.rc != 0
+
+- name: Run the iLab Sanity Check
+  shell: /tmp/scripts/run_ilab_sanity_check.sh
+  register: ilab_sanity_result
+  failed_when: ilab_sanity_result.rc != 0
