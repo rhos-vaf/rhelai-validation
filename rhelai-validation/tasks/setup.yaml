@@ -1,0 +1,17 @@
+---
+- name: Create /etc/ilab
+  file:
+    path: /etc/ilab
+    state: directory
+
+- name: Opt-out of Insights to use iLab
+  file:
+    path: /etc/ilab/insights-opt-out
+    state: touch
+
+- name: Copy scripts from local to RHEL AI machine
+  copy:
+    src: ./scripts
+    dest: /scripts
+    recursive: yes
+    mode: '0755'

@@ -3,6 +3,10 @@
   hosts: target_nodes
   become: true
   tasks:
+    # Set-up the environment
+    - name: Setup
+      import_tasks: tasks/setup.yaml
+
     - name: Check DNS entry
       import_tasks: tasks/dns.yaml
 
@@ -14,3 +18,7 @@
 
     - name: Check NVIDIA
       import_tasks: tasks/nvidia.yaml
+
+    # Clean-up the environment
+    - name: Cleanup
+      import_tasks: tasks/cleanup.yaml

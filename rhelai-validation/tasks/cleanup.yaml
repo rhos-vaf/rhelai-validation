@@ -1,0 +1,5 @@
+---
+- name: Clean-up iLab Insights config
+  file:
+    path: /etc/ilab
+    state: absent
