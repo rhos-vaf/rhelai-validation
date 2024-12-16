@@ -8,12 +8,14 @@
   command: lspci -nn
   register: lspci_output
 
-- name: Ensure all GPUs are present in the RHEL AI instance
-  ansible.builtin.assert:
-    that:
-      - " item | string in lspci_output.stdout"
-    msg: "The GPU '{{ item }}' was not found in the instance!"
-  loop: "{{ pci_devices }}"
+- name: Check each PCI device
+  shell: |
+    echo "{{ lspci_output.stdout }}" | grep '{{ item.key }}' | wc -l
+  register: pci_count
+  loop: "{{ pci_devices | dict2items }}"
+  vars:
+    expected_count: "{{ item.value }}"
+  failed_when: pci_count.stdout | int != expected_count | int
 
 - name: Set found_nvidia to true if NVIDIA is found
   set_fact:
