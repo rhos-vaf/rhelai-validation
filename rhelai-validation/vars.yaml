@@ -1,3 +1,6 @@
+# optional
+# [string]: DNS server to inject into /etc/resolv.conf
 dns_server: 192.168.122.1
+# [dict] The PCI Device ID and the number of devices expected
 pci_devices:
   "10de:27b8": 1
