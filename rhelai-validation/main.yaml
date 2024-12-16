@@ -7,6 +7,9 @@
     - name: Setup
       import_tasks: tasks/setup.yaml
 
+    - name: Check DNS entry
+      import_tasks: tasks/dns.yaml
+
     - name: Check GPUs
       import_tasks: tasks/gpus.yaml
 
