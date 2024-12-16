@@ -3,3 +3,8 @@
   file:
     path: /etc/ilab
     state: absent
+
+- name: Clean-up the scripts directory
+  file:
+    path: /tmp/scripts
+    state: absent
