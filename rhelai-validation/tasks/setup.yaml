@@ -1,4 +1,9 @@
 ---
+- name: Install pciutils package
+  ansible.builtin.dnf:
+    name: pciutils
+    state: present
+
 - name: Create /etc/ilab
   file:
     path: /etc/ilab

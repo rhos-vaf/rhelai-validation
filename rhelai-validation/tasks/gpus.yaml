@@ -1,9 +1,4 @@
 ---
-- name: Install pciutils package
-  ansible.builtin.dnf:
-    name: pciutils
-    state: present
-
 - name: Run lspci command and save output
   command: lspci -nn
   register: lspci_output
