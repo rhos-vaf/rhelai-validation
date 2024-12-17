@@ -1,4 +1,11 @@
 ---
+- name: Remove a DNS entry from /etc/resolv.conf
+  lineinfile:
+    path: /etc/resolv.conf
+    state: absent
+    line: "nameserver {{ dns_server }}"
+  when: dns_server != ""
+
 - name: Clean-up iLab Insights config
   file:
     path: /etc/ilab
