@@ -1,23 +1,47 @@
 import sys
 
 import torch
-import torch.nn as nn
 
 
 def sanity_check():
-    # Define a simple model
-    model = nn.Linear(10, 5)  # Input size 10, output size 5
-    # Create dummy input
-    dummy_input = torch.randn(1, 10)  # Batch size 1, input size 10
-    # Pass dummy input through the model
-    output = model(dummy_input)
-    # Print input and output shapes
-    print(f"Input shape: {dummy_input.shape}, Output shape: {output.shape}")
+    """
+    A simple sanity check method.
 
-SUCCESS = False
+    A simple sanity check method that uses the GPU to multiply two
+    tensors and checks GPU memory usage.
+    """
+    # Check for GPU availability
+    if not torch.cuda.is_available():
+        print("ERROR: GPU not available")
+        raise Exception()
+
+    device = torch.device("cuda")
+    initial_memory_allocated = torch.cuda.memory_allocated(0)
+    initial_memory_reserved = torch.cuda.memory_reserved(0)
+    print(f"Memory allocated before matrix multiplication: {initial_memory_allocated / 1e6} MB")
+    print(f"Memory reserved before matrix multiplication: {initial_memory_reserved / 1e6} MB")
+
+    # Create two large tensors
+    size = (1000, 1000)
+    tensor_a = torch.rand(size, device=device)
+    tensor_b = torch.rand(size, device=device)
+    # Perform matrix multiplication
+    result = torch.matmul(tensor_a, tensor_b)
+
+    final_memory_allocated = torch.cuda.memory_allocated(0)
+    final_memory_reserved = torch.cuda.memory_reserved(0)
+    print(f"Memory allocated after matrix multiplication: {final_memory_allocated / 1e6} MB")
+    print(f"Memory reserved after matrix multiplication: {final_memory_reserved / 1e6} MB")
+
+    print(f"Result shape: {result.shape}")
+
+    # Assert the GPU was used
+    assert initial_memory_allocated < final_memory_allocated
+    assert initial_memory_reserved < final_memory_reserved
+
+
 try:
     sanity_check()
-    SUCCESS = True
-finally:
-    rc = 0 if SUCCESS else 1
-    sys.exit(rc)
+    sys.exit(0)
+except Exception:
+    sys.exit(1)
