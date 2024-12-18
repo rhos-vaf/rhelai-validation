@@ -1,4 +1,12 @@
 ---
+- name: Add DNS entry to /etc/resolv.conf if dns_server is set
+  lineinfile:
+    path: /etc/resolv.conf
+    line: "nameserver {{ dns_server }}"
+    state: present
+    insertafter: EOF
+  when: dns_server != ""
+
 - name: Install pciutils package
   ansible.builtin.dnf:
     name: pciutils
