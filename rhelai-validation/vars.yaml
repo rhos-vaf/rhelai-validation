@@ -4,3 +4,10 @@ dns_server: 192.168.122.1
 # [dict] The PCI Device ID and the number of devices expected
 pci_devices:
   "10de:27b8": 1
+
+model_tests: false
+model_download_repository: docker://registry.redhat.io/rhelai1/granite-8b-starter-v1
+model_path: /var/home/cloud-user/.cache/instructlab/models/granite-8b-lab-v1
+# [float]: Performance threshholds
+model_perf_max_time_per_tok: 0.1
+model_perf_max_time_to_first_tok: 0.1

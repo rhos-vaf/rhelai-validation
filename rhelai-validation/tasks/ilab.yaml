@@ -8,3 +8,9 @@
   shell: /tmp/scripts/run_ilab_sanity_check.sh
   register: ilab_sanity_result
   failed_when: ilab_sanity_result.rc != 0
+
+- name: Run model performance and monitoring check
+  block:
+    - import_tasks: model_download_and_serve.yaml
+    - import_tasks: model_performance.yaml
+  when: model_tests

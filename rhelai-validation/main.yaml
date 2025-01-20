@@ -10,11 +10,11 @@
     - name: Check GPUs
       import_tasks: tasks/gpus.yaml
 
-    - name: Check iLab
-      import_tasks: tasks/ilab.yaml
-
     - name: Check NVIDIA
       import_tasks: tasks/nvidia.yaml
+
+    - name: Check iLab
+      import_tasks: tasks/ilab.yaml
 
     # Clean-up the environment
     - name: Cleanup

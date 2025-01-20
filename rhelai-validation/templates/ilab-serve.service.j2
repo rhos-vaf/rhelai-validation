@@ -1,0 +1,9 @@
+[Unit]
+Description=ilab model serve service
+
+[Install]
+WantedBy=multi-user.target default.target
+
+[Service]
+ExecStart=ilab model serve --model-path {{model_path | quote}}
+Restart=always
