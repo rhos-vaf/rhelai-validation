@@ -5,5 +5,5 @@ Description=ilab model serve service
 WantedBy=multi-user.target default.target
 
 [Service]
-ExecStart=ilab model serve --model-path {{model_path | quote}}
+ExecStart=ilab model serve --model-path {{[model_path_base | model_name] | join('/') | quote}}
 Restart=always

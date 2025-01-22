@@ -1,9 +1,14 @@
 ---
+- name: Append --hf-token argument to model download args if specified
+  set_fact:
+    model_download_extra_args: "--hf-token {{model_download_hf_token | quote}}"
+  when: model_download_hf_token
+
 - name: Download the inference model
   become_user: cloud-user
   command:
-    cmd: ilab model download --repository {{model_download_repository | quote}} --release latest
-    creates: "{{model_path}}"
+    cmd: ilab model download --repository {{[model_download_repository_base, model_name] | join('/') | regex_replace('^/','') | quote }} --release latest {{model_download_extra_args}}
+    creates: "{{[model_path_base, model_name] | join('/') }}"
   vars:
     ansible_command_timeout: 3600
 
