@@ -15,6 +15,6 @@
     var: performance_json
   failed_when: |
     (performance_json.avg_time_per_tok | float) == 0
-    or (performance_json.avg_time_per_tok | float) > model_perf_max_time_per_tok
+    or (performance_json.avg_time_per_tok | float) > model_perf_max_avg_time_per_tok
     or (performance_json.avg_time_to_first_tok | float) == 0
-    or (performance_json.avg_time_to_first_tok | float) > model_perf_max_time_to_first_tok
+    or (performance_json.avg_time_to_first_tok | float) > model_perf_max_avg_time_to_first_tok

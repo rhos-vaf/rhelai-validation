@@ -1,0 +1,21 @@
+- name: Construct the model_path
+  set_fact:
+    model_path: "{{[model_path_base | regex_replace('/$',''), model_name] | join('/') }}"
+
+- name: Count the configured GPUs
+  set_fact:
+    num_gpus: "{{pci_devices | dict2items |  map(attribute=\"value\") | sum}}"
+
+- name: Run ilab config init
+  ansible.builtin.expect:
+    command: ilab config init
+    responses:
+      "Enter the number of your choice": 0
+      "Do you want to restore these profiles to the default values": "y"
+      "Do you still want to continue": "y"
+    timeout: 900
+    echo: yes
+
+- name: Adjust tensor-parallel-size
+  command: perl -0777 -i.orig -pe "s/(vllm_args:[\\s\\n]*- --tensor-parallel-size[\\s\\n]*-) '\d+'/\1 '{{num_gpus}}'/" /var/home/cloud-user/.config/instructlab/config.yaml
+

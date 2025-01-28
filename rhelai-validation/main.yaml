@@ -1,10 +1,11 @@
 ---
 - name: RHEL AI Validation Playbook
   hosts: target_nodes
-  become: true
+  gather_facts: false
   tasks:
     # Set-up the environment
     - name: Setup
+      become: true
       import_tasks: tasks/setup.yaml
 
     - name: Check GPUs
@@ -18,4 +19,5 @@
 
     # Clean-up the environment
     - name: Cleanup
+      become: true
       import_tasks: tasks/cleanup.yaml

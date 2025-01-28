@@ -1,14 +1,20 @@
 ---
-- name: Append --hf-token argument to model download args if specified
+- name: Append --hf-token to model download args if specified
   set_fact:
-    model_download_extra_args: "--hf-token {{model_download_hf_token | quote}}"
+    model_download_token_args: "--hf-token {{model_download_hf_token | quote}}"
+  no_log: true
   when: model_download_hf_token
+
+- name: Append --release to model download args if specified
+  set_fact:
+    model_download_release_args: "--release {{model_download_release | quote}}"
+  when: model_download_release
 
 - name: Download the inference model
   become_user: cloud-user
   command:
-    cmd: ilab model download --repository {{[model_download_repository_base, model_name] | join('/') | regex_replace('^/','') | quote }} --release latest {{model_download_extra_args}}
-    creates: "{{[model_path_base, model_name] | join('/') }}"
+    cmd: ilab model download --repository {{[model_download_repository_base | regex_replace('/$', ''), model_name] | join('/') | regex_replace('^/','') | quote }} {{model_download_release_args | default('')}} {{model_download_token_args | default('')}}
+    creates: "{{[model_path, 'model.safetensors'] | join('/') }}"
   vars:
     ansible_command_timeout: 3600
 
@@ -50,5 +56,13 @@
     cmd: curl -s --show-error http://localhost:8000/
   register: result
   until: result.rc == 0
-  retries: 30
+  retries: 180  # 180 * 10 = 30 mins - this can be extremely slow in some environments https://github.com/containers/podman/issues/16541
+  delay: 10
+
+- name: Wait for vllm metrics endpoint to appear
+  command:
+    cmd: curl -s --show-error http://localhost:8000/
+  register: result
+  until: result.rc == 0
+  retries: 12  # 12 * 10 = 2 mins after API appears
   delay: 10
