@@ -16,6 +16,42 @@
     timeout: 900
     echo: yes
 
-- name: Adjust tensor-parallel-size
-  command: perl -0777 -i.orig -pe "s/(vllm_args:[\\s\\n]*- --tensor-parallel-size[\\s\\n]*-) '\d+'/\1 '{{num_gpus}}'/" /var/home/cloud-user/.config/instructlab/config.yaml
+- name: Get rhelai config file content
+  slurp:
+    src: "{{ rhelai_config_file }}"
+  register: rhelai_config_slurp
 
+- name: Decode rhelai config yaml
+  set_fact:
+    rhelai_config: "{{ rhelai_config_slurp.content | b64decode | from_yaml }}"
+
+- name: Update gpus lines in config
+  set_fact:
+    rhelai_config: "{{ rhelai_config | combine(update_dict, recursive=True) }}"
+  vars:
+    update_dict:
+      evaluate:
+        gpus: "{{num_gpus}}"
+      generate:
+        teacher:
+          vllm:
+            gpus: "{{num_gpus}}"
+      serve:
+        vllm:
+          gpus: "{{num_gpus}}"
+
+- name: Find tensor-parallel-size argument in config
+  set_fact:
+    tps_index: "{{ rhelai_config.serve.vllm.vllm_args | ansible.utils.index_of('eq', '--tensor-parallel-size') + 1 }}"
+
+- name: Update tensor-parallel-size argument in config
+  ansible.utils.update_fact:
+    updates:
+      - path: "rhelai_config.serve.vllm.vllm_args[{{tps_index}}]"
+        value: "{{num_gpus}}"
+  register: updated
+
+- name: Update rhelai config file
+  copy:
+    content: "{{ updated.rhelai_config | to_nice_yaml(indent=2) }}"
+    dest: "{{ rhelai_config_file }}"

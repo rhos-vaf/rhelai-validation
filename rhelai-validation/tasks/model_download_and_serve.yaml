@@ -61,7 +61,7 @@
 
 - name: Wait for vllm metrics endpoint to appear
   command:
-    cmd: curl -s --show-error http://localhost:8000/
+    cmd: curl -fs --show-error http://localhost:8000/metrics/
   register: result
   until: result.rc == 0
   retries: 12  # 12 * 10 = 2 mins after API appears
