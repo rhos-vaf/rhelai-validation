@@ -1,17 +1,17 @@
 ---
 - name: Remove a DNS entry from /etc/resolv.conf
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/resolv.conf
     state: absent
-    line: "nameserver {{ dns_server }}"
+    line: nameserver {{ dns_server }}
   when: dns_server != ""
 
 - name: Clean-up iLab Insights config
-  file:
+  ansible.builtin.file:
     path: /etc/ilab
     state: absent
 
 - name: Clean-up the scripts directory
-  file:
+  ansible.builtin.file:
     path: /tmp/scripts
     state: absent

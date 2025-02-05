@@ -13,71 +13,93 @@
   changed_when: false
 
 - name: Append --hf-token to model download args if specified
-  set_fact:
-    model_download_token_args: "--hf-token {{model_download_hf_token | quote}}"
+  ansible.builtin.set_fact:
+    model_download_token_args: --hf-token {{ model_download_hf_token | quote }}
   no_log: true
   when: model_download_hf_token
 
 - name: Append --release to model download args if specified
-  set_fact:
-    model_download_release_args: "--release {{model_download_release | quote}}"
+  ansible.builtin.set_fact:
+    model_download_release_args: --release {{ model_download_release | quote }}
   when: model_download_release
 
+- name: Construct the model repository url
+  ansible.builtin.set_fact:
+    model_download_repository: "{{ [model_download_repository_base | regex_replace('/$', ''), model_name] | join('/') | regex_replace('^/', '') }}"
+
 - name: Download the inference model
-  become_user: cloud-user
-  command:
-    cmd: ilab model download --repository {{[model_download_repository_base | regex_replace('/$', ''), model_name] | join('/') | regex_replace('^/','') | quote }} {{model_download_release_args | default('')}} {{model_download_token_args | default('')}}
-    creates: "{{[model_path, 'config.json'] | join('/') }}"
+  ansible.builtin.command:
+    cmd: >
+      ilab model download --repository {{ model_download_repository | quote }}
+      {{ model_download_release_args | default('') }} {{ model_download_token_args | default('') }}
+    creates: "{{ [model_path, 'config.json'] | join('/') }}"
   vars:
-    ansible_command_timeout: 3600
+    ansible_command_timeout: 7200
 
 - name: Create user systemd directory
-  file:
+  ansible.builtin.file:
     path: /var/home/cloud-user/.config/systemd/user
     state: directory
-    mode: '0755'
+    mode: "0755"
     owner: cloud-user
     group: cloud-user
 
 - name: Create ilab systemd service on RHEL AI machine
-  template:
+  ansible.builtin.template:
     src: templates/ilab-serve.service.j2
     dest: /var/home/cloud-user/.config/systemd/user/ilab-serve.service
     owner: cloud-user
     group: cloud-user
-    mode: '0755'
+    mode: "0755"
   register: serviceconfig
 
 - name: Stop the model serving service
-  when: serviceconfig.changed
-  systemd_service:
+  when: serviceconfig.changed  # noqa: no-handler - readability
+  ansible.builtin.systemd_service:
     scope: user
     name: ilab-serve
     state: stopped
 
 - name: Reload systemd config
-  systemd_service:
+  ansible.builtin.systemd_service:
     scope: user
     daemon_reload: true
 
 - name: Start the model serving service
-  systemd_service:
+  ansible.builtin.systemd_service:
     scope: user
     name: ilab-serve
     state: started
 
+- name: Tempfile to discard get_url content  # using `dest: /dev/null` gives errors
+  ansible.builtin.tempfile:
+  register: get_url_tempfile
+  changed_when: false
+
 - name: Wait for vllm API to appear
-  command:
-    cmd: curl -s --show-error http://localhost:8000/
-  register: result
-  until: result.rc == 0
+  ansible.builtin.get_url:
+    url: http://localhost:8000/health
+    dest: "{{ get_url_tempfile.path }}"
+    mode: "0600"
+  register: api_result
+  until: ("status_code" in api_result) and (api_result.status_code == 200)
   retries: 180  # 180 * 10 = 30 mins - this can be extremely slow in some environments https://github.com/containers/podman/issues/16541
   delay: 10
+  changed_when: false
 
 - name: Wait for vllm metrics endpoint to appear
-  command:
-    cmd: curl -fs --show-error http://localhost:8000/metrics/
-  register: result
-  until: result.rc == 0
+  ansible.builtin.get_url:
+    url: http://localhost:8000/metrics/
+    dest: "{{ get_url_tempfile.path }}"
+    mode: "0600"
+  register: metrics_result
+  until: ("status_code" in metrics_result) and (metrics_result.status_code == 200)
   retries: 12  # 12 * 10 = 2 mins after API appears
   delay: 10
+  changed_when: false
+
+- name: Discard the Tempfile
+  ansible.builtin.file:
+    path: "{{ get_url_tempfile.path }}"
+    state: absent
+  changed_when: false
