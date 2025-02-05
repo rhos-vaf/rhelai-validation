@@ -5,10 +5,14 @@ dns_server: 192.168.122.1
 pci_devices:
   "10de:27b8": 1
 
-model_tests: false
+model_tests_enabled: true # Can be disabled for lighter CUDA-only sanity testing
 model_name: granite-8b-lab-v1  # To use "TinyLlama/TinyLlama-1.1B-Chat-v1.0" set model_download_release and model_download_repository_base to ''):
 # [string] (optional) HuggingFace token if required for download
 model_download_hf_token:
+# [string] (optional) Model registry username if required for download
+model_download_registry_username:
+# [string] (optional) Model registry password if required for download
+model_download_registry_password:
 # [string] (optional) Model container tag to download
 model_download_release: latest
 model_download_repository_base: docker://registry.redhat.io/rhelai1/

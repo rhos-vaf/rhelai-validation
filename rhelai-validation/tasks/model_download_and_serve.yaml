@@ -1,4 +1,16 @@
 ---
+- name: Extract the repository host name
+  ansible.builtin.set_fact:
+    model_download_registry_host: "{{ model_download_repository_base | regex_replace('docker://(.*?)/.*', '\\1') }}"
+
+- name: Log into registry if username is specified
+  ansible.builtin.command:
+    cmd: >
+      podman login --username {{ model_download_registry_username | quote }} --password
+      {{ model_download_registry_password | quote }} {{ model_download_registry_host | quote }}
+  when: model_download_registry_username
+  changed_when: false
+
 - name: Append --hf-token to model download args if specified
   set_fact:
     model_download_token_args: "--hf-token {{model_download_hf_token | quote}}"
