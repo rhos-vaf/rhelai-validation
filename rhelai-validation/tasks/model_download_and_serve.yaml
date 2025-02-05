@@ -37,19 +37,21 @@
 
 - name: Stop the model serving service
   when: serviceconfig.changed
-  become_user: cloud-user
-  command:
-    cmd: systemctl --user stop ilab-serve.service
+  systemd_service:
+    scope: user
+    name: ilab-serve
+    state: stopped
 
 - name: Reload systemd config
-  become_user: cloud-user
-  command:
-    cmd: systemctl --user daemon-reload
+  systemd_service:
+    scope: user
+    daemon_reload: true
 
 - name: Start the model serving service
-  command:
-    cmd: systemctl --user start ilab-serve.service
-  become_user: cloud-user
+  systemd_service:
+    scope: user
+    name: ilab-serve
+    state: started
 
 - name: Wait for vllm API to appear
   command:
