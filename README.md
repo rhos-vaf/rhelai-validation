@@ -15,7 +15,7 @@ Once the RHEL AI deployment is complete, do the following:
 
 3. Clone the repository
     ```
-    git clone https://gitlab.cee.redhat.com/lmartins/rhelai-validation.git
+    git clone https://gitlab.cee.redhat.com/eng/openstack/team/ai-enablement/rhelai-validation.git
     cd rhelai-validation/rhelai-validation
     ```
 

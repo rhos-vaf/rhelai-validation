@@ -8,6 +8,7 @@
     cmd: >
       podman login --username {{ model_download_registry_username | quote }} --password
       {{ model_download_registry_password | quote }} {{ model_download_registry_host | quote }}
+  no_log: true
   when: model_download_registry_username
   changed_when: false
 
