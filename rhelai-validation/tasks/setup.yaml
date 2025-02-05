@@ -9,7 +9,6 @@
 
 - name: Install pciutils package
   ansible.builtin.dnf:
-    use_backend: dnf4
     name: pciutils
     state: present
 

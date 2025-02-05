@@ -3,11 +3,12 @@
 MODEL_PATH="${MODEL_PATH:-/var/home/cloud-user/.cache/instructlab/models/granite-8b-lab-v1}"
 
 function do_curl {
-    if [ $1 == "chat" ]; then
-        CURL_OUTPUT=$(curl -s --show-error -f -X POST "http://localhost:8000/v1/chat/completions" -H "Content-Type: application/json" --data '{"model": "'$MODEL_PATH'","messages": [{"role": "user","content": "Who am I speaking to?"}]}')
-    elif [ $1 == "metrics" ]; then
+    if [ "$1" == "chat" ]; then
+        CURL_OUTPUT=$(curl -s --show-error -f -X POST "http://localhost:8000/v1/chat/completions" -H "Content-Type: application/json" --data '{"model": "'"${MODEL_PATH}"'","messages": [{"role": "user","content": "Who am I speaking to?"}]}')
+    elif [ "$1" == "metrics" ]; then
         CURL_OUTPUT=$(curl -s --show-error -f localhost:8000/metrics)
     fi
+    # shellcheck disable=SC2181
     if [ $? -ne 0 ]; then
         exit 1
     fi

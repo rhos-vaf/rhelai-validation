@@ -19,7 +19,7 @@ git clone https://gitlab.cee.redhat.com/lmartins/rhelai-validation.git
 cd rhelai-validation/rhelai-validation
 ```
 
-4. Run it as
+4. Run it (requires ansible-core==2.14)
 ```
 ansible-playbook -i inventory main.yaml --extra-vars @vars.yaml
 ```

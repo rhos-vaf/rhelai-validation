@@ -40,18 +40,22 @@
         vllm:
           gpus: "{{num_gpus}}"
 
-- name: Find tensor-parallel-size argument in config
-  set_fact:
-    tps_index: "{{ rhelai_config.serve.vllm.vllm_args | ansible.utils.index_of('eq', '--tensor-parallel-size') + 1 }}"
-
-- name: Update tensor-parallel-size argument in config
-  ansible.utils.update_fact:
-    updates:
-      - path: "rhelai_config.serve.vllm.vllm_args[{{tps_index}}]"
-        value: "{{num_gpus}}"
-  register: updated
+# update_fact is preferred solution w/ ansible >= 2.15 (use updated.rhelai_config in the copy task below)
+# - name: Find tensor-parallel-size argument in config
+#   set_fact:
+#     tps_index: "{{ rhelai_config.serve.vllm.vllm_args | ansible.utils.index_of('eq', '--tensor-parallel-size') + 1 }}"
+# - name: Update tensor-parallel-size argument in config
+#   ansible.utils.update_fact:
+#     updates:
+#       - path: "rhelai_config.serve.vllm.vllm_args[{{tps_index}}]"
+#         value: "{{num_gpus}}"
+#   register: updated
 
 - name: Update rhelai config file
   copy:
-    content: "{{ updated.rhelai_config | to_nice_yaml(indent=2) }}"
+    content: "{{ rhelai_config | to_nice_yaml(indent=2) }}"
     dest: "{{ rhelai_config_file }}"
+
+# Workaround for ansible < 2.15
+- name: Adjust tensor-parallel-size (workaround for pre-2.15)
+  command: perl -0777 -i.orig -pe "s/(vllm_args:[\\s\\n]*- --tensor-parallel-size[\\s\\n]*-) '\d+'/\1 '{{num_gpus}}'/" /var/home/cloud-user/.config/instructlab/config.yaml

@@ -14,7 +14,7 @@
   become_user: cloud-user
   command:
     cmd: ilab model download --repository {{[model_download_repository_base | regex_replace('/$', ''), model_name] | join('/') | regex_replace('^/','') | quote }} {{model_download_release_args | default('')}} {{model_download_token_args | default('')}}
-    creates: "{{[model_path, 'model.safetensors'] | join('/') }}"
+    creates: "{{[model_path, 'config.json'] | join('/') }}"
   vars:
     ansible_command_timeout: 3600
 
