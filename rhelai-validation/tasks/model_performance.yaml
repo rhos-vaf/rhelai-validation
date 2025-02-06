@@ -1,0 +1,20 @@
+---
+- name: Run the model performance check script
+  shell: /tmp/scripts/model_performance_check.sh
+  environment:
+    MODEL_PATH: "{{model_path}}"
+  register: performance_script_output
+  failed_when: performance_script_output.rc != 0
+
+- name: Parse the JSON output from performance check script
+  set_fact:
+    performance_json: "{{performance_script_output.stdout | from_json}}"
+
+- name: Check the performance thresholds
+  debug:
+    var: performance_json
+  failed_when: |
+    (performance_json.avg_time_per_tok | float) == 0
+    or (performance_json.avg_time_per_tok | float) > model_perf_max_avg_time_per_tok
+    or (performance_json.avg_time_to_first_tok | float) == 0
+    or (performance_json.avg_time_to_first_tok | float) > model_perf_max_avg_time_to_first_tok

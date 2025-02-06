@@ -1,21 +1,23 @@
 ---
 - name: RHEL AI Validation Playbook
   hosts: target_nodes
-  become: true
+  gather_facts: false
   tasks:
     # Set-up the environment
     - name: Setup
+      become: true
       import_tasks: tasks/setup.yaml
 
     - name: Check GPUs
       import_tasks: tasks/gpus.yaml
 
-    - name: Check iLab
-      import_tasks: tasks/ilab.yaml
-
     - name: Check NVIDIA
       import_tasks: tasks/nvidia.yaml
 
+    - name: Check iLab
+      import_tasks: tasks/ilab.yaml
+
     # Clean-up the environment
     - name: Cleanup
+      become: true
       import_tasks: tasks/cleanup.yaml

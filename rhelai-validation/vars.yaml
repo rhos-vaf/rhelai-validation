@@ -4,3 +4,21 @@ dns_server: 192.168.122.1
 # [dict] The PCI Device ID and the number of devices expected
 pci_devices:
   "10de:27b8": 1
+
+model_tests_enabled: true # Can be disabled for lighter CUDA-only sanity testing
+model_name: granite-8b-lab-v1  # To use "TinyLlama/TinyLlama-1.1B-Chat-v1.0" set model_download_release and model_download_repository_base to ''):
+# [string] (optional) HuggingFace token if required for download
+model_download_hf_token:
+# [string] (optional) Model registry username if required for download
+model_download_registry_username:
+# [string] (optional) Model registry password if required for download
+model_download_registry_password:
+# [string] (optional) Model container tag to download
+model_download_release: latest
+model_download_repository_base: docker://registry.redhat.io/rhelai1/
+model_path_base: /var/home/cloud-user/.cache/instructlab/models/
+# [float]: Performance threshholds
+model_perf_max_avg_time_per_tok: 0.03
+model_perf_max_avg_time_to_first_tok: 0.3
+
+rhelai_config_file: /var/home/cloud-user/.config/instructlab/config.yaml
