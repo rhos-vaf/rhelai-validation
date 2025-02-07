@@ -1,8 +1,8 @@
 ---
 - name: Add DNS entry to /etc/resolv.conf if dns_server is set
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/resolv.conf
-    line: "nameserver {{ dns_server }}"
+    line: nameserver {{ dns_server }}
     state: present
     insertafter: EOF
   when: dns_server != ""
@@ -13,17 +13,19 @@
     state: present
 
 - name: Create /etc/ilab
-  file:
+  ansible.builtin.file:
     path: /etc/ilab
     state: directory
+    mode: "0655"
 
 - name: Opt-out of Insights to use iLab
-  file:
+  ansible.builtin.file:
     path: /etc/ilab/insights-opt-out
     state: touch
+    mode: "0600"
 
 - name: Copy scripts from local to RHEL AI machine
-  copy:
+  ansible.builtin.copy:
     src: "{{ playbook_dir }}/scripts"
-    dest: "/tmp"
-    mode: '1777'
+    dest: /tmp
+    mode: "1777"

@@ -31,4 +31,3 @@ Once the RHEL AI deployment is complete, do the following:
     ```
     ansible-playbook -i inventory main.yaml --extra-vars @vars.yaml --extra-vars @creds.yaml
     ```
-

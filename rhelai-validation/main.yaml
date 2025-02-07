@@ -6,18 +6,13 @@
     # Set-up the environment
     - name: Setup
       become: true
-      import_tasks: tasks/setup.yaml
-
+      ansible.builtin.import_tasks: tasks/setup.yaml
     - name: Check GPUs
-      import_tasks: tasks/gpus.yaml
-
+      ansible.builtin.import_tasks: tasks/gpus.yaml
     - name: Check NVIDIA
-      import_tasks: tasks/nvidia.yaml
-
+      ansible.builtin.import_tasks: tasks/nvidia.yaml
     - name: Check iLab
-      import_tasks: tasks/ilab.yaml
-
-    # Clean-up the environment
+      ansible.builtin.import_tasks: tasks/ilab.yaml
     - name: Cleanup
       become: true
-      import_tasks: tasks/cleanup.yaml
+      ansible.builtin.import_tasks: tasks/cleanup.yaml
