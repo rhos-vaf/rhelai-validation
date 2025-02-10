@@ -22,4 +22,8 @@ model_path_base: /var/home/cloud-user/.cache/instructlab/models/
 model_perf_max_avg_time_per_tok: !!float "0.03"
 model_perf_max_avg_time_to_first_tok: !!float "0.3"
 
+nginx_enable: true  # Disable for simpler tests with no SSL requirements
+# [string[]] (optional) Additional domain names to serve and list as Subject Alternate Name in SSL certificate
+nginx_altnames: [rhelai.redhat.com, www.rhelai.redhat.com, testy.mc.tester]
+
 rhelai_config_file: /var/home/cloud-user/.config/instructlab/config.yaml

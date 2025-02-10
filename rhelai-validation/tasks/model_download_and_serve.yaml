@@ -71,35 +71,20 @@
     name: ilab-serve
     state: started
 
-- name: Tempfile to discard get_url content  # using `dest: /dev/null` gives errors
-  ansible.builtin.tempfile:
-  register: get_url_tempfile
-  changed_when: false
-
 - name: Wait for vllm API to appear
-  ansible.builtin.get_url:
+  ansible.builtin.uri:
     url: http://localhost:8000/health
-    dest: "{{ get_url_tempfile.path }}"
-    mode: "0600"
   register: api_result
-  until: ("status_code" in api_result) and (api_result.status_code == 200)
+  until: ("status" in api_result) and (api_result.status == 200)
   retries: 180  # 180 * 10 = 30 mins - this can be extremely slow in some environments https://github.com/containers/podman/issues/16541
   delay: 10
   changed_when: false
 
 - name: Wait for vllm metrics endpoint to appear
-  ansible.builtin.get_url:
+  ansible.builtin.uri:
     url: http://localhost:8000/metrics/
-    dest: "{{ get_url_tempfile.path }}"
-    mode: "0600"
   register: metrics_result
-  until: ("status_code" in metrics_result) and (metrics_result.status_code == 200)
+  until: ("status" in metrics_result) and (metrics_result.status == 200)
   retries: 12  # 12 * 10 = 2 mins after API appears
   delay: 10
-  changed_when: false
-
-- name: Discard the Tempfile
-  ansible.builtin.file:
-    path: "{{ get_url_tempfile.path }}"
-    state: absent
   changed_when: false
