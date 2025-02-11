@@ -1,0 +1,68 @@
+- name: Create nginx directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0700"
+  loop:
+    - /var/home/cloud-user/nginx/ssl
+    - /var/home/cloud-user/nginx/conf.d
+
+- name: Create SSL request config
+  ansible.builtin.template:
+    src: templates/nginx-ssl.req.cnf.j2
+    dest: /var/home/cloud-user/nginx/ssl.req.cnf
+    owner: cloud-user
+    group: cloud-user
+    mode: "0600"
+
+- name: Create self-signed SSL cert
+  ansible.builtin.command:
+    cmd: >
+      openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /var/home/cloud-user/nginx/ssl/rhelai.test.key
+      -out /var/home/cloud-user/nginx/ssl/rhelai.test.crt -config /var/home/cloud-user/nginx/ssl.req.cnf
+    creates: /var/home/cloud-user/nginx/ssl/rhelai.test.crt
+
+- name: Create Nginx config
+  ansible.builtin.template:
+    src: templates/nginx-rhelai.test.conf.j2
+    dest: /var/home/cloud-user/nginx/conf.d/rhelai.test.conf
+    owner: cloud-user
+    group: cloud-user
+    mode: "0600"
+
+- name: Create nginx-ssl systemd service on RHEL AI machine
+  ansible.builtin.template:
+    src: templates/nginx-ssl.service.j2
+    dest: /var/home/cloud-user/.config/systemd/user/nginx-ssl.service
+    owner: cloud-user
+    group: cloud-user
+    mode: "0600"
+  register: serviceconfig
+
+- name: Stop the model serving service
+  when: serviceconfig.changed  # noqa: no-handler - readability
+  ansible.builtin.systemd_service:
+    scope: user
+    name: nginx-ssl
+    state: stopped
+
+- name: Reload systemd config
+  ansible.builtin.systemd_service:
+    scope: user
+    daemon_reload: true
+
+- name: Start the model serving service
+  ansible.builtin.systemd_service:
+    scope: user
+    name: nginx-ssl
+    state: started
+
+- name: Check that vllm API is available via SSL
+  ansible.builtin.uri:
+    url: https://localhost:8443/health
+    validate_certs: false
+  register: ssl_result
+  until: ("status" in ssl_result) and (ssl_result.status == 200)
+  retries: 30  # 30 * 2 = 1 minute
+  delay: 2
+  changed_when: false
