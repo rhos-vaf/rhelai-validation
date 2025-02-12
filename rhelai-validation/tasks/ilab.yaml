@@ -12,10 +12,10 @@
   changed_when: false
 
 - name: Run model performance and monitoring check
-  when: model_tests_enabled
+  when: model_tests_enabled | bool
   block:
     - ansible.builtin.import_tasks: ilab_config.yaml  # noqa: name[missing]
     - ansible.builtin.import_tasks: model_download_and_serve.yaml  # noqa: name[missing]
     - ansible.builtin.import_tasks: model_performance.yaml  # noqa: name[missing]
     - ansible.builtin.import_tasks: nginx_ssl.yaml  # noqa: name[missing]
-      when: nginx_enable
+      when: nginx_enabled | bool
