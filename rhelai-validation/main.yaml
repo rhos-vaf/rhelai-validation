@@ -1,5 +1,21 @@
 ---
-- name: RHEL AI Validation Playbook
+- name: RHEL AI VM setup
+  hosts: control_node
+  gather_facts: false
+  tasks:
+    - name: RHELAI VM setup
+      when: deploy_rhelai_enabled | bool
+      block:
+        - name: Install python-openstackclient
+          ansible.builtin.pip:
+            name: python-openstackclient
+          become: true
+          when: deploy_rhelai_openstack_command == "openstack"
+        - ansible.builtin.import_tasks: tasks/cleanup_vm.yaml  # noqa: name[missing]
+          when: deploy_rhelai_pre_cleanup_enabled | bool
+        - ansible.builtin.import_tasks: tasks/deploy_vm.yaml  # noqa: name[missing]
+
+- name: RHEL AI Validation
   hosts: target_nodes
   gather_facts: false
   tasks:
@@ -16,3 +32,10 @@
     - name: Cleanup
       become: true
       ansible.builtin.import_tasks: tasks/cleanup.yaml
+
+- name: RHEL AI VM post-cleanup
+  hosts: control_node
+  gather_facts: false
+  tasks:
+    - ansible.builtin.import_tasks: tasks/cleanup_vm.yaml  # noqa: name[missing]
+      when: deploy_rhelai_enabled | bool and deploy_rhelai_post_cleanup_enabled | bool
