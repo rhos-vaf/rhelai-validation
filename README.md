@@ -17,9 +17,16 @@ Once the RHOSO + RHEL AI setup is complete, do the following:
     model_download_registry_username: "|3c5aa7e0-9bb9...."
     model_download_registry_password: "eyJhbGciOiJSUzUxMiJ9...."
     ```
-1. Ensure you are logged in to Openshift
+1. Set up and test your access to RHOSO
     ```
-    oc login ...
+    oc cp openstackclient:.config/openstack/ ~/.config/openstack
+    oc cp openstackclient:/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem ./tls-ca-bundle.pem
+    export OS_CLOUD=default
+    openstack --os-cacert ./tls-ca-bundle.pem flavor list
+    ```
+1. Install Ansible dependencies
+    ```
+    ansible-galaxy install -r requirements.yaml
     ```
 1. Run it (requires ansible-core>=2.15)
     ```
@@ -35,6 +42,10 @@ Once the RHOSO + RHEL AI setup is complete, do the following:
     test-operator-controller-manager   1/1     1            1           29d
     ```
 1. Adjust the `pci_devices` variable in AnsibleTestCRD.yaml to match your hardware
+1. Provide an SSH key to use for access to RHELAI VM
+    ```
+    oc create secret generic rhelai-vm-secret-key --from-file=ssh-privatekey=$HOME/.ssh/rhel-ai.pem
+    ```
 1. Launch the test container
     ```
     $ oc apply -f AnsibleTestCRD.yaml
