@@ -5,7 +5,7 @@ Once the RHOSO + RHEL AI setup is complete, do the following:
 
 1. Clone the repository
     ```
-    git clone https://gitlab.cee.redhat.com/eng/openstack/team/ai-enablement/rhelai-validation.git
+    git clone git@github.com:rhos-vaf/rhelai-validation.git
     cd rhelai-validation/
     ```
 1. (Optional - see NOTE below) Create a credentials file for registry login using a token. You can generate one at [here](https://access.redhat.com/terms-based-registry/) after logging in.
