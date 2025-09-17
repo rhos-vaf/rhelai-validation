@@ -1,4 +1,44 @@
 ---
+- name: Check for installed nvidia-driver RPM
+  ansible.builtin.package_facts:
+    manager: rpm
+
+- name: Check if nvidia-driver installation is needed
+  ansible.builtin.set_fact:
+    _install_nvidia_driver: "{{ 'nvidia-driver' not in ansible_facts.packages }}"
+
+- name: Install nvidia-driver RPM if needed
+  when: _install_nvidia_driver
+  block:
+  - name: Add nvidia CUDA repo
+    become: true
+    yum_repository:
+      name: nvidia-cuda-rhel9
+      description: NVIDIA CUDA repo for RHEL 9
+      baseurl: "{{nvidia_repo_url}}/$basearch/"
+      gpgcheck: yes
+      gpgkey: "{{nvidia_repo_url}}/$basearch/D42D0685.pub"
+
+  - name: Add EPEL repository for DKMS support
+    become: true
+    ansible.builtin.yum_repository:
+      name: epel
+      description: EPEL YUM repo
+      baseurl: https://download.fedoraproject.org/pub/epel/9/Everything/$basearch/
+      enabled: 1
+      gpgcheck: 1
+      gpgkey: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9
+
+  - name: Install nvidia-driver RPM module
+    become: true
+    ansible.builtin.dnf:
+      name: "@nvidia-driver:open-dkms"
+      state: present
+
+  - name: Refresh package facts after driver installation
+    ansible.builtin.package_facts:
+      manager: rpm
+
 - name: Run nvidia-smi to list NVIDIA GPUs and count them
   ansible.builtin.shell: set -o pipefail && nvidia-smi --list-gpus | wc -l
   register: nvidia_gpu_count

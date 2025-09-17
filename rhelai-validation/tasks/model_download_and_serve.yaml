@@ -18,36 +18,18 @@
   no_log: true
   when: model_download_hf_token
 
-- name: Append --release to model download args if specified
-  ansible.builtin.set_fact:
-    model_download_release_args: --release {{ model_download_release | quote }}
-  when: model_download_release
-
-- name: Construct the model repository url
-  ansible.builtin.set_fact:
-    model_download_repository: "{{ [model_download_repository_base | regex_replace('/$', ''), model_name] | join('/') | regex_replace('^/', '') }}"
-
-- name: Download the inference model
-  ansible.builtin.command:
-    cmd: >
-      ilab model download --repository {{ model_download_repository | quote }}
-      {{ model_download_release_args | default('') }} {{ model_download_token_args | default('') }}
-    creates: "{{ [model_path, 'config.json'] | join('/') }}"
-  vars:
-    ansible_command_timeout: 7200
-
 - name: Create user systemd directory
   ansible.builtin.file:
-    path: /var/home/cloud-user/.config/systemd/user
+    path: /home/cloud-user/.config/systemd/user
     state: directory
     mode: "0755"
     owner: cloud-user
     group: cloud-user
 
-- name: Create ilab systemd service on RHEL AI machine
+- name: Create vllm model serving systemd service
   ansible.builtin.template:
-    src: templates/ilab-serve.service.j2
-    dest: /var/home/cloud-user/.config/systemd/user/ilab-serve.service
+    src: templates/vllm-serve.service.j2
+    dest: /home/cloud-user/.config/systemd/user/vllm-serve.service
     owner: cloud-user
     group: cloud-user
     mode: "0755"
@@ -57,7 +39,7 @@
   when: serviceconfig.changed  # noqa: no-handler - readability
   ansible.builtin.systemd_service:
     scope: user
-    name: ilab-serve
+    name: vllm-serve
     state: stopped
 
 - name: Reload systemd config
@@ -68,7 +50,7 @@
 - name: Start the model serving service
   ansible.builtin.systemd_service:
     scope: user
-    name: ilab-serve
+    name: vllm-serve
     state: started
 
 - name: Wait for vllm API to appear
@@ -76,7 +58,7 @@
     url: http://localhost:8000/health
   register: api_result
   until: ("status" in api_result) and (api_result.status == 200)
-  retries: 180  # 180 * 10 = 30 mins - this can be extremely slow in some environments https://github.com/containers/podman/issues/16541
+  retries: 180  # 180 * 10 = 30 mins - this includes the time to download the model
   delay: 10
   changed_when: false
 

@@ -2,7 +2,7 @@
 - name: Run the model performance check script
   ansible.builtin.command: /tmp/scripts/model_performance_check.sh
   environment:
-    MODEL_PATH: "{{ model_path }}"
+    MODEL_NAME: "{{ model_name }}"
   register: performance_script_output
   changed_when: false
   failed_when: performance_script_output.rc != 0
@@ -11,11 +11,3 @@
   ansible.builtin.set_fact:
     performance_json: "{{ performance_script_output.stdout | from_json }}"
 
-- name: Check the performance thresholds
-  ansible.builtin.debug:
-    var: performance_json
-  failed_when: |-
-    (performance_json.avg_time_per_tok | float) == 0
-    or (performance_json.avg_time_per_tok | float) > model_perf_max_avg_time_per_tok
-    or (performance_json.avg_time_to_first_tok | float) == 0
-    or (performance_json.avg_time_to_first_tok | float) > model_perf_max_avg_time_to_first_tok

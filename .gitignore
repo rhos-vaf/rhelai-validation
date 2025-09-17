@@ -2,3 +2,5 @@
 *.pyc
 tls-ca-bundle.pem
 creds.yaml
+inventory-local
+main-local.yaml

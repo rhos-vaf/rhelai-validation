@@ -1,0 +1,11 @@
+---
+- name: Install torch libs
+  ansible.builtin.pip:
+    name: torch
+    state: present
+    extra_args: -i https://download.pytorch.org/whl/cu126
+
+- name: Install numpy libs
+  ansible.builtin.pip:
+    name: numpy
+    state: present

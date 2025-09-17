@@ -1,9 +1,0 @@
-[Unit]
-Description=nginx ssl service
-
-[Install]
-WantedBy=multi-user.target default.target
-
-[Service]
-ExecStart=podman run --net host -v /var/home/cloud-user/nginx/conf.d:/etc/nginx/conf.d:ro,Z -v /var/home/cloud-user/nginx/ssl:/etc/nginx/ssl:ro,Z docker.io/library/nginx:latest
-Restart=always

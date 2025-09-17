@@ -3,8 +3,8 @@
   openstack.cloud.server:
     state: present
     name: "{{ deploy_rhelai_vm_name }}"
-    flavor: "{{ deploy_rhelai_flavor }}"
-    image: "{{ deploy_rhelai_image }}"
+    flavor: "{{ deploy_rhelai_flavor_name }}"
+    image: "{{ deploy_rhelai_image_name }}"
     key_name: "{{ deploy_rhelai_key_name }}"
     nics:
       - net-name: "{{ deploy_rhelai_net_name }}"

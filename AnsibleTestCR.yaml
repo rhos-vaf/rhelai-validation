@@ -2,10 +2,10 @@
 apiVersion: test.openstack.org/v1beta1
 kind: AnsibleTest
 metadata:
-  name: rhel-ai-validation-ansibletest
+  name: rhelai-validation
   namespace: openstack
 spec:
-  ansibleGitRepo: https://github.com/openstack-k8s-operators/rhelai-validation.git
+  ansibleGitRepo: https://github.com/rhos-vaf/rhelai-validation.git
   # yamllint disable rule:line-length
   ansibleInventory: |
     [control_node]
@@ -18,15 +18,13 @@ spec:
     model_tests_enabled: false
     pci_devices:
       10de:20f1: 1
-  computeSSHKeySecretName: rhelai-vm-secret-key
   containerImage: quay.io/podified-master-centos9/openstack-ansible-tests:current-podified
   debug: false
   openStackConfigMap: openstack-config
   openStackConfigSecret: openstack-config-secret
   privileged: true
   resources: {}
-  storageClass: crc-csi-hostpath-provisioner
-  # The rhelai-vm-secret-key secret was generated using the following command (notice the name of the field which stores
-  # the privatekey -> ssh-privatekey):
-  # oc create secret generic rhelai-vm-secret-key --from-file=ssh-privatekey=/home/stack/.ssh/rhel-ai.pem
-  workloadSSHKeySecretName: rhelai-vm-secret-key
+  # If not running in cifmw, the SSH secret can be generated using the following command
+  # oc create secret generic dataplane-ansible-ssh-private-key-secret --from-file=ssh-privatekey=/home/stack/.ssh/rhel-ai.pem
+  computeSSHKeySecretName: dataplane-ansible-ssh-private-key-secret
+  workloadSSHKeySecretName: dataplane-ansible-ssh-private-key-secret
