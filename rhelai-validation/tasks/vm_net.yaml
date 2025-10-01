@@ -65,6 +65,16 @@
     ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
   register: public_network_info
 
+- name: Check if floating IP already exists
+  openstack.cloud.floating_ip_info:
+    floating_ip_address: "{{ deploy_rhelai_floating_ip }}"
+    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+  register: existing_fip_info
+
+- name: Set floating IP creation flag
+  set_fact:
+    create_floating_ip: "{{ (existing_fip_info.floating_ips | length) == 0 }}"
+
 - name: Create floating ip address on public network
   openstack.cloud.resource:
     service: network
@@ -74,3 +84,4 @@
       floating_ip_address: "{{ deploy_rhelai_floating_ip }}"
       floating_network_id: "{{ public_network_info.networks[0].id }}"
     ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+  when: create_floating_ip

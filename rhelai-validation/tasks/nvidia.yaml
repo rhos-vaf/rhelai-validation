@@ -10,6 +10,19 @@
 - name: Install nvidia-driver RPM if needed
   when: _install_nvidia_driver
   block:
+  - name: Blacklist nouveau kernel module
+    become: true
+    ansible.builtin.blockinfile:
+      block: |
+        blacklist nouveau
+      path: /etc/modprobe.d/blacklist.conf
+      create: true
+
+  - name: Remove nouveau kernel module if loaded
+    become: true
+    ansible.builtin.command: modprobe -r nouveau
+    ignore_errors: true
+
   - name: Add nvidia CUDA repo
     become: true
     yum_repository:
@@ -29,10 +42,16 @@
       gpgcheck: 1
       gpgkey: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9
 
-  - name: Install nvidia-driver RPM module
+  - name: Enable nvidia-driver RPM module
     become: true
     ansible.builtin.dnf:
-      name: "@nvidia-driver:open-dkms"
+      name: "@nvidia-driver:latest-dkms"
+      state: present
+
+  - name: Install the nvidia driver
+    become: true
+    ansible.builtin.dnf:
+      name: cuda-drivers
       state: present
 
   - name: Refresh package facts after driver installation

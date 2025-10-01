@@ -17,7 +17,7 @@ spec:
   ansibleVarFiles: |
     model_tests_enabled: false
     pci_devices:
-      10de:20f1: 1
+      10de:27b8: 1
   containerImage: quay.io/podified-master-centos9/openstack-ansible-tests:current-podified
   debug: false
   openStackConfigMap: openstack-config
