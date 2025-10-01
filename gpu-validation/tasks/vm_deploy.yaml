@@ -1,0 +1,25 @@
+---
+- name: Create VM {{ gpu_validation_vm_name }}
+  openstack.cloud.server:
+    state: present
+    name: "{{ gpu_validation_vm_name }}"
+    flavor: "{{ gpu_validation_flavor_name }}"
+    image: "{{ gpu_validation_image_name }}"
+    key_name: "{{ gpu_validation_key_name }}"
+    nics:
+      - net-name: "{{ gpu_validation_net_name }}"
+    floating_ips:
+      - "{{ gpu_validation_floating_ip }}"
+    security_groups:
+      - "{{ gpu_validation_security_group }}"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
+
+- name: Poll for SSH to be available on {{ gpu_validation_vm_name }}
+  ansible.builtin.command: |
+    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+    -i {{ gpu_validation_private_key_file }} cloud-user@{{ gpu_validation_floating_ip }}
+  retries: 60  # 60 * 10 = 10 mins
+  delay: 10
+  register: result
+  until: result.rc == 0
+  changed_when: false
