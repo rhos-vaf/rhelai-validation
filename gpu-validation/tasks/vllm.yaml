@@ -1,4 +1,5 @@
-- name: PIP; install vllm 
+---
+- name: PIP; install vllm
   ansible.builtin.pip:
     name: vllm
     state: present
@@ -6,5 +7,5 @@
 - ansible.builtin.import_tasks: vllm_config.yaml  # noqa: name[missing]
 - ansible.builtin.import_tasks: model_download_and_serve.yaml  # noqa: name[missing]
 - ansible.builtin.import_tasks: model_performance.yaml  # noqa: name[missing]
-- ansible.builtin.import_tasks: model_performance_assertions.yaml # noqa: name[missing]
+- ansible.builtin.import_tasks: model_performance_assertions.yaml  # noqa: name[missing] ignore-errors
   ignore_errors: true
