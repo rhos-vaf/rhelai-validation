@@ -1,0 +1,59 @@
+---
+# [bool] Whether to deploy a VM before running tests
+gpu_validation_enabled: true
+# [string] Name of the VM to create and destroy
+gpu_validation_vm_name: gpu-validation
+# [string] URL of the image to use when creating the VM
+gpu_validation_image_url: https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-GenericCloud-9-latest.x86_64.qcow2
+# [string] Image name to use when creating the VM
+gpu_validation_image_name: gpu-validation
+# [string] Flavor to use when creating the VM
+gpu_validation_flavor_name: nvidia
+# [string] RAM value for the flavor
+gpu_validation_flavor_ram: 40960
+# [string] CPU value for the flavor
+gpu_validation_flavor_vcpus: 8
+# [string] Disk value for the flavor
+gpu_validation_flavor_disk: 20
+# [string] Number of GPUs for the flavor
+gpu_validation_flavor_gpus: 1
+
+# [string] Keypair to use when creating the VM
+gpu_validation_key_name: gpu-validation
+# [string] Network to use when creating the VM
+gpu_validation_net_name: private
+# [string] Network to use when creating the VM
+gpu_validation_security_group: basic
+# [string] Floating IP to assign to the VM
+gpu_validation_floating_ip: 192.168.122.222
+# [string] WARNING Where to (over-)write the ssh key. Must match path in inventory
+gpu_validation_private_key_file: ~/test_keypair.key
+# [bool] Whether to clean up the VM before running tests
+gpu_validation_pre_cleanup_enabled: true
+# [bool] Whether to clean up the VM after running tests
+gpu_validation_post_cleanup_enabled: false
+# [string] Where to find RHOSO certificates for openstack.cloud modules
+gpu_validation_ca_cert_path: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+
+# [string] DNS server to inject into /etc/resolv.conf
+gpu_validation_dns_server: 192.168.122.1
+# [dict] The PCI Device ID and the number of devices expected
+gpu_validation_pci_devices:
+  10de:27b8: 1
+
+gpu_validation_model_tests_enabled: true  # Can be disabled for lighter CUDA-only sanity testing
+gpu_validation_model_name: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+# [string] (optional) HuggingFace token if required for download
+gpu_validation_model_download_hf_token:
+# [string] (optional) Model registry username if required for download
+gpu_validation_model_download_registry_username:
+# [string] (optional) Model registry password if required for download
+gpu_validation_model_download_registry_password:
+# [string] (optional) Model container tag to download
+gpu_validation_model_download_release: ''  # Set to '' for TinyLlama
+gpu_validation_model_download_repository_base: ''  # Set to '' if downloading from HuggingFace
+# [float] Performance threshholds
+gpu_validation_model_perf_max_avg_time_per_tok: !!float "0.03"
+gpu_validation_model_perf_max_avg_time_to_first_tok: !!float "0.3"
+
+gpu_validation_nvidia_repo_url: "https://developer.download.nvidia.com/compute/cuda/repos/rhel9/"

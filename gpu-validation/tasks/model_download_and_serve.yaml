@@ -1,22 +1,22 @@
 ---
 - name: Extract the repository host name
   ansible.builtin.set_fact:
-    model_download_registry_host: "{{ model_download_repository_base | regex_replace('docker://(.*?)/.*', '\\1') }}"
+    gpu_validation_model_download_registry_host: "{{ gpu_validation_model_download_repository_base | regex_replace('docker://(.*?)/.*', '\\1') }}"
 
 - name: Log into registry if username is specified
   ansible.builtin.command:
     cmd: >
-      podman login --username {{ model_download_registry_username | quote }} --password
-      {{ model_download_registry_password | quote }} {{ model_download_registry_host | quote }}
+      podman login --username {{ gpu_validation_model_download_registry_username | quote }} --password
+      {{ gpu_validation_model_download_registry_password | quote }} {{ gpu_validation_model_download_registry_host | quote }}
   no_log: true
-  when: model_download_registry_username
+  when: gpu_validation_model_download_registry_username
   changed_when: false
 
 - name: Append --hf-token to model download args if specified
   ansible.builtin.set_fact:
-    model_download_token_args: --hf-token {{ model_download_hf_token | quote }}
+    gpu_validation_model_download_token_args: --hf-token {{ gpu_validation_model_download_hf_token | quote }}
   no_log: true
-  when: model_download_hf_token
+  when: gpu_validation_model_download_hf_token
 
 - name: Create user systemd directory
   ansible.builtin.file:

@@ -1,0 +1,26 @@
+- name: Download VM image
+  ansible.builtin.get_url:
+    url: "{{ gpu_validation_image_url }}"
+    dest: "/tmp/{{ gpu_validation_image_url | basename }}"
+    mode: '0644'
+
+- name: Create glance image from GPU validation download source
+  openstack.cloud.image:
+    name: "{{gpu_validation_image_name}}"
+    container_format: bare
+    disk_format: qcow2
+    filename: "/tmp/{{ gpu_validation_image_url | basename }}"
+    visibility: public
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
+
+- name: Create flavor for GPU validation
+  openstack.cloud.compute_flavor:
+    name: "{{gpu_validation_flavor_name}}"
+    ram: "{{gpu_validation_flavor_ram}}"
+    vcpus: "{{gpu_validation_flavor_vcpus}}"
+    disk: "{{gpu_validation_flavor_disk}}"
+    extra_specs:
+      "pci_passthrough:alias": "gpu-l4:{{gpu_validation_flavor_gpus}}"
+      "hw:pci_numa_affinity_policy": "preferred"
+      "hw:hide_hypervisor_id": "true"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"

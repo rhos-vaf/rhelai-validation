@@ -1,10 +1,10 @@
 ---
-- name: Overwrite DNS entries in /etc/resolv.conf if dns_server is set
+- name: Overwrite DNS entries in /etc/resolv.conf if gpu_validation_dns_server is set
   ansible.builtin.copy:
     dest: /etc/resolv.conf
     content: |
-      nameserver {{ dns_server }}
-  when: dns_server != ""
+      nameserver {{ gpu_validation_dns_server }}
+  when: gpu_validation_dns_server != ""
 
 - name: Install pciutils package
   ansible.builtin.dnf:

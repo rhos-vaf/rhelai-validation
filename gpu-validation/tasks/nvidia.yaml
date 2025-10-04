@@ -28,9 +28,9 @@
     yum_repository:
       name: nvidia-cuda-rhel9
       description: NVIDIA CUDA repo for RHEL 9
-      baseurl: "{{nvidia_repo_url}}/$basearch/"
+      baseurl: "{{gpu_validation_nvidia_repo_url}}/$basearch/"
       gpgcheck: yes
-      gpgkey: "{{nvidia_repo_url}}/$basearch/D42D0685.pub"
+      gpgkey: "{{gpu_validation_nvidia_repo_url}}/$basearch/D42D0685.pub"
 
   - name: Add EPEL repository for DKMS support
     become: true

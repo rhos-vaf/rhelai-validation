@@ -4,7 +4,7 @@
     set -o pipefail
     echo "{{ lspci_output.stdout }}" | grep '{{ item.key }}' | wc -l
   register: pci_count
-  loop: "{{ pci_devices | dict2items }}"
+  loop: "{{ gpu_validation_pci_devices | dict2items }}"
   vars:
     expected_count: "{{ item.value }}"
   failed_when: pci_count.stdout | int != expected_count | int

@@ -1,4 +1,0 @@
----
-- name: Count the configured GPUs
-  ansible.builtin.set_fact:
-    num_gpus: '{{ pci_devices | dict2items | map(attribute="value") | sum }}'

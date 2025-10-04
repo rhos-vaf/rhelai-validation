@@ -1,0 +1,6 @@
+---
+- name: Delete VM {{ gpu_validation_vm_name }}
+  openstack.cloud.server:
+    name: "{{ gpu_validation_vm_name }}"
+    state: absent
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"

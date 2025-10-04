@@ -5,5 +5,5 @@ Description=vllm model serve service
 WantedBy=multi-user.target default.target
 
 [Service]
-ExecStart=vllm serve {{model_name | quote}} --tensor-parallel-size {{num_gpus}} --port 8000
+ExecStart=vllm serve {{gpu_validation_model_name | quote}} --tensor-parallel-size {{gpu_validation_num_gpus}} --port 8000
 Restart=always

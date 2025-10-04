@@ -1,6 +1,0 @@
----
-- name: Delete VM {{ deploy_rhelai_vm_name }}
-  openstack.cloud.server:
-    name: "{{ deploy_rhelai_vm_name }}"
-    state: absent
-    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"

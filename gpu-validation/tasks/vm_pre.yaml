@@ -1,10 +1,10 @@
 ---
 - name: RHEL AI VM setup
-  when: deploy_rhelai_enabled | bool
+  when: gpu_validation_enabled | bool
   block:
     - name: VM Cleanup (Pre)
       ansible.builtin.import_tasks: vm_cleanup.yaml
-      when: deploy_rhelai_pre_cleanup_enabled | bool
+      when: gpu_validation_pre_cleanup_enabled | bool
 
     - name: VM image import
       ansible.builtin.import_tasks: vm_image.yaml
