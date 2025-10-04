@@ -6,8 +6,14 @@
       ansible.builtin.import_tasks: vm_cleanup.yaml
       when: deploy_rhelai_pre_cleanup_enabled | bool
 
+    - name: VM image import
+      ansible.builtin.import_tasks: vm_image.yaml
+
     - name: Set up SSH key for VM
       ansible.builtin.import_tasks: vm_sshkey.yaml
+
+    - name: Set up networking
+      ansible.builtin.import_tasks: vm_net.yaml
 
     - name: VM Deploy
       ansible.builtin.import_tasks: vm_deploy.yaml

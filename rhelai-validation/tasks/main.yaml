@@ -2,18 +2,29 @@
 - name: Setup
   become: true
   ansible.builtin.import_tasks: setup.yaml
+
 - name: Check GPUs
   ansible.builtin.import_tasks: gpus.yaml
 - name: GPUs Assertions  # noqa: ignore-errors
   ansible.builtin.import_tasks: gpus_assertions.yaml
   ignore_errors: true
+
 - name: Check NVIDIA
   ansible.builtin.import_tasks: nvidia.yaml
 - name: NVIDIA Assertions  # noqa: ignore-errors
   ansible.builtin.import_tasks: nvidia_assertions.yaml
   ignore_errors: true
-- name: Check iLab
-  ansible.builtin.import_tasks: ilab.yaml
+
+- name: Check CUDA libs
+  ansible.builtin.import_tasks: cuda.yaml
+- name: CUDA Assertions
+  ansible.builtin.import_tasks: cuda_assertions.yaml
+  ignore_errors: true
+
+- name: Check vllm
+  ansible.builtin.import_tasks: vllm.yaml
+  when: model_tests_enabled | bool
+
 - name: Cleanup
   become: true
   ansible.builtin.import_tasks: cleanup.yaml

@@ -1,10 +1,9 @@
 ---
-- name: Add DNS entry to /etc/resolv.conf if dns_server is set
-  ansible.builtin.lineinfile:
-    path: /etc/resolv.conf
-    line: nameserver {{ dns_server }}
-    state: present
-    insertafter: EOF
+- name: Overwrite DNS entries in /etc/resolv.conf if dns_server is set
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    content: |
+      nameserver {{ dns_server }}
   when: dns_server != ""
 
 - name: Install pciutils package
@@ -13,17 +12,11 @@
     name: pciutils
     state: present
 
-- name: Create /etc/ilab
-  ansible.builtin.file:
-    path: /etc/ilab
-    state: directory
-    mode: "0655"
-
-- name: Opt-out of Insights to use iLab
-  ansible.builtin.file:
-    path: /etc/ilab/insights-opt-out
-    state: touch
-    mode: "0600"
+- name: Install pip package
+  ansible.builtin.dnf:
+    use_backend: dnf4
+    name: pip
+    state: present
 
 - name: Copy scripts from local to RHEL AI machine
   ansible.builtin.copy:

@@ -41,12 +41,8 @@ Once the RHOSO + RHEL AI setup is complete, do the following:
     NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
     test-operator-controller-manager   1/1     1            1           29d
     ```
-1. Adjust the `pci_devices` variable in AnsibleTestCRD.yaml to match your hardware
-1. Provide an SSH key to use for access to RHELAI VM
-    ```
-    oc create secret generic rhelai-vm-secret-key --from-file=ssh-privatekey=$HOME/.ssh/rhel-ai.pem
-    ```
+1. Adjust the `pci_devices` variable in AnsibleTestCR.yaml to match your hardware
 1. Launch the test container
     ```
-    $ oc apply -f AnsibleTestCRD.yaml
+    $ oc apply -f AnsibleTestCR.yaml
     ```
