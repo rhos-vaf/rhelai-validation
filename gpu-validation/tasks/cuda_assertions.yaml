@@ -1,4 +1,4 @@
-
+---
 - name: TEST[CUDA] Run the CUDA Sanity Check
   ansible.builtin.command: python /tmp/scripts/cuda_sanity_check.py
   register: cuda_sanity_result

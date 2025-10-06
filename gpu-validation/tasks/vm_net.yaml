@@ -72,7 +72,7 @@
   register: existing_fip_info
 
 - name: Set floating IP creation flag
-  set_fact:
+  ansible.builtin.set_fact:
     create_floating_ip: "{{ (existing_fip_info.floating_ips | length) == 0 }}"
 
 - name: Create floating ip address on public network

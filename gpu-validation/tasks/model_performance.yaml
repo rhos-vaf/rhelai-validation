@@ -10,4 +10,3 @@
 - name: Parse the JSON output from performance check script
   ansible.builtin.set_fact:
     performance_json: "{{ performance_script_output.stdout | from_json }}"
-

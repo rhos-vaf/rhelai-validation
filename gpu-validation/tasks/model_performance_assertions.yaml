@@ -1,3 +1,4 @@
+---
 - name: TEST[model_performance]Check the performance thresholds
   ansible.builtin.debug:
     var: performance_json

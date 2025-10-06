@@ -25,12 +25,12 @@
     creates: /etc/alternatives/python3
 
 - name: Set python3 alternative to /usr/bin/python3.12
-  ansible.builtin.alternatives:
+  community.general.alternatives:
     name: python3
     path: /usr/bin/python3.12
 
 - name: Set ansible to use python3.12
-  set_fact:
+  ansible.builtin.set_fact:
     ansible_python_interpreter: /usr/bin/python3.12
 
 - name: Ensure python3.12-setuptools is installed
