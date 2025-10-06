@@ -2,3 +2,5 @@
 collections:
   - name: openstack.cloud
     version: ">=2.4.1"
+  - name: community.general
+    version: ">=10.0.0"
