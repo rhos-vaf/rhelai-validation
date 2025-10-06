@@ -67,8 +67,8 @@
 
 - name: Check if floating IP already exists
   openstack.cloud.floating_ip_info:
-    floating_ip_address: "{{ deploy_rhelai_floating_ip }}"
-    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+    floating_ip_address: "{{ gpu_validation_floating_ip }}"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
   register: existing_fip_info
 
 - name: Set floating IP creation flag
