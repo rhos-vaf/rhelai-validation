@@ -10,11 +10,11 @@ gpu_validation_image_name: gpu-validation
 # [string] Flavor to use when creating the VM
 gpu_validation_flavor_name: nvidia
 # [string] RAM value for the flavor
-gpu_validation_flavor_ram: 40960
+gpu_validation_flavor_ram: 16384
 # [string] CPU value for the flavor
-gpu_validation_flavor_vcpus: 8
+gpu_validation_flavor_vcpus: 4
 # [string] Disk value for the flavor
-gpu_validation_flavor_disk: 20
+gpu_validation_flavor_disk: 80
 # [string] Number of GPUs for the flavor
 gpu_validation_flavor_gpus: 1
 
@@ -40,6 +40,9 @@ gpu_validation_dns_server: 192.168.122.1
 # [dict] The PCI Device ID and the number of devices expected
 gpu_validation_pci_devices:
   10de:27b8: 1
+
+# [string] libnvidia-container-toolkit version
+gpu_validation_libnvidia_container_toolkit_version_release: 1.17.8-1
 
 gpu_validation_model_tests_enabled: true  # Can be disabled for lighter CUDA-only sanity testing
 gpu_validation_model_name: TinyLlama/TinyLlama-1.1B-Chat-v1.0

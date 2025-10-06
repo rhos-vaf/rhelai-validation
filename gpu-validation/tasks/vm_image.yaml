@@ -1,9 +1,20 @@
 ---
+- name: Check if image with the correct name already exists in Glance
+  openstack.cloud.image_info:
+    name: "{{ gpu_validation_image_name }}"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
+  register: _gpu_validation_image_info
+
+- name: Set fact if image exists
+  ansible.builtin.set_fact:
+    _gpu_validation_image_exists: "{{ (_gpu_validation_image_info.images | length) > 0 }}"
+
 - name: Download VM image
   ansible.builtin.get_url:
     url: "{{ gpu_validation_image_url }}"
     dest: "/tmp/{{ gpu_validation_image_url | basename }}"
     mode: '0644'
+  when: not _gpu_validation_image_exists
 
 - name: Create glance image from GPU validation download source
   openstack.cloud.image:
@@ -13,6 +24,7 @@
     filename: "/tmp/{{ gpu_validation_image_url | basename }}"
     visibility: public
     ca_cert: "{{ gpu_validation_ca_cert_path }}"
+  when: not _gpu_validation_image_exists
 
 - name: Create flavor for GPU validation
   openstack.cloud.compute_flavor:

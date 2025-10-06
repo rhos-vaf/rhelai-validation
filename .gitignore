@@ -1,5 +1,7 @@
 .venv
 *.pyc
+.ansible
+.vscode
 tls-ca-bundle.pem
 creds.yaml
 inventory-local

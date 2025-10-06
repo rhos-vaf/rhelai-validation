@@ -12,11 +12,13 @@
   when: gpu_validation_model_download_registry_username
   changed_when: false
 
-- name: Append --hf-token to model download args if specified
-  ansible.builtin.set_fact:
-    gpu_validation_model_download_token_args: --hf-token {{ gpu_validation_model_download_hf_token | quote }}
-  no_log: true
-  when: gpu_validation_model_download_hf_token
+- name: Create huggingface cache directory
+  ansible.builtin.file:
+    path: /home/cloud-user/.cache/huggingface
+    state: directory
+    mode: "0755"
+    owner: cloud-user
+    group: cloud-user
 
 - name: Create user systemd directory
   ansible.builtin.file:

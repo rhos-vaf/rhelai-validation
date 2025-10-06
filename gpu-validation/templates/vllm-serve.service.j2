@@ -5,5 +5,13 @@ Description=vllm model serve service
 WantedBy=multi-user.target default.target
 
 [Service]
-ExecStart=/home/cloud-user/.local/bin/vllm serve {{ gpu_validation_model_name | quote }} --tensor-parallel-size {{ gpu_validation_num_gpus }} --port 8000
-Restart=always
+ExecStart=podman run --device nvidia.com/gpu=all \
+    -v /home/cloud-user/.cache/huggingface:/root/.cache/huggingface \
+{% if gpu_validation_model_download_hf_token %}
+    --env "HUGGING_FACE_HUB_TOKEN={{ gpu_validation_model_download_hf_token | quote }}" \
+{% endif %}
+    -p 8000:8000 \
+    --ipc=host \
+    docker.io/vllm/vllm-openai:latest \
+    --model {{ gpu_validation_model_name | quote }} \
+    --tensor-parallel-size {{ gpu_validation_num_gpus }}
