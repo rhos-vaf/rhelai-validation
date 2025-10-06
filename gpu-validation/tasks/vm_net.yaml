@@ -1,74 +1,74 @@
 ---
 - name: Create private network
   openstack.cloud.network:
-    name: "{{ deploy_rhelai_net_name }}"
+    name: "{{ gpu_validation_net_name }}"
     shared: true
     state: present
-    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
 
 - name: Create private subnet
   openstack.cloud.subnet:
-    name: "{{ deploy_rhelai_net_name }}_sub"
-    network: "{{ deploy_rhelai_net_name }}"
+    name: "{{ gpu_validation_net_name }}_sub"
+    network: "{{ gpu_validation_net_name }}"
     cidr: 192.168.0.0/24
     state: present
-    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
 
 - name: Create private router
   openstack.cloud.router:
     name: priv_router
     interfaces:
-      - net: "{{ deploy_rhelai_net_name }}"
-        subnet: "{{ deploy_rhelai_net_name }}_sub"
+      - net: "{{ gpu_validation_net_name }}"
+        subnet: "{{ gpu_validation_net_name }}_sub"
     external_gateway_info:
       network: public
     state: present
-    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
   register: private_router
 
 - name: Create basic security group
   openstack.cloud.security_group:
-    name: "{{ deploy_rhelai_security_group }}"
+    name: "{{ gpu_validation_security_group }}"
     state: present
-    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
 
 - name: Add ICMP rule to security group
   openstack.cloud.security_group_rule:
-    security_group: "{{ deploy_rhelai_security_group }}"
+    security_group: "{{ gpu_validation_security_group }}"
     protocol: icmp
     direction: ingress
     state: present
-    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
 
 - name: Add SSH rule to security group
   openstack.cloud.security_group_rule:
-    security_group: "{{ deploy_rhelai_security_group }}"
+    security_group: "{{ gpu_validation_security_group }}"
     protocol: tcp
     port_range_min: 22
     port_range_max: 22
     direction: ingress
     state: present
-    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
 
 - name: Add TCP rule for all ports to security group
   openstack.cloud.security_group_rule:
-    security_group: "{{ deploy_rhelai_security_group }}"
+    security_group: "{{ gpu_validation_security_group }}"
     protocol: tcp
     remote_ip_prefix: 0.0.0.0/0
     direction: egress
     state: present
-    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
 
 - name: Get public network information
   openstack.cloud.networks_info:
     name: public
-    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
   register: public_network_info
 
 - name: Check if floating IP already exists
   openstack.cloud.floating_ip_info:
-    floating_ip_address: "{{ deploy_rhelai_floating_ip }}"
-    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+    floating_ip_address: "{{ gpu_validation_floating_ip }}"
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"
   register: existing_fip_info
 
 - name: Set floating IP creation flag
@@ -80,8 +80,7 @@
     service: network
     type: ip
     attributes:
-      name: rhelai_floating_ip
-      floating_ip_address: "{{ deploy_rhelai_floating_ip }}"
+      name: gpu_validation_floating_ip
+      floating_ip_address: "{{ gpu_validation_floating_ip }}"
       floating_network_id: "{{ public_network_info.networks[0].id }}"
-    ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
-  when: create_floating_ip
+    ca_cert: "{{ gpu_validation_ca_cert_path }}"

@@ -23,7 +23,7 @@
 
 - name: Check vllm
   ansible.builtin.import_tasks: vllm.yaml
-  when: model_tests_enabled | bool
+  when: gpu_validation_model_tests_enabled | bool
 
 - name: Cleanup
   become: true

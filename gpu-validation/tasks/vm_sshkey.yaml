@@ -1,14 +1,14 @@
 ---
 - name: Check if SSH privkey exists
   ansible.builtin.stat:
-    path: "{{ deploy_rhelai_private_key_file }}"
+    path: "{{ gpu_validation_private_key_file }}"
   register: privkey_stat_result
 
 - name: Use provided SSH key
   when: privkey_stat_result.stat.exists
   block:
     - name: Generate SSH pubkey from provided key
-      ansible.builtin.command: ssh-keygen -y -f {{ deploy_rhelai_private_key_file | quote }}
+      ansible.builtin.command: ssh-keygen -y -f {{ gpu_validation_private_key_file | quote }}
       register: keygen_result
       changed_when: false
       failed_when: keygen_result.rc != 0
@@ -16,15 +16,15 @@
     # Only doing this because `state: replace` isn't working for me
     - name: Delete existing openstack keypair
       openstack.cloud.keypair:
-        name: "{{ deploy_rhelai_key_name }}"
+        name: "{{ gpu_validation_key_name }}"
         state: absent
-        ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+        ca_cert: "{{ gpu_validation_ca_cert_path }}"
     - name: Create openstack keypair from supplied key
       openstack.cloud.keypair:
-        name: "{{ deploy_rhelai_key_name }}"
+        name: "{{ gpu_validation_key_name }}"
         public_key: "{{ keygen_result.stdout }}"
         state: replace
-        ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+        ca_cert: "{{ gpu_validation_ca_cert_path }}"
 
 - name: Create new SSH key
   when: not privkey_stat_result.stat.exists
@@ -32,19 +32,19 @@
     # Only doing this because `state: replace` isn't working for me
     - name: Delete existing openstack keypair
       openstack.cloud.keypair:
-        name: "{{ deploy_rhelai_key_name }}"
+        name: "{{ gpu_validation_key_name }}"
         state: absent
-        ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+        ca_cert: "{{ gpu_validation_ca_cert_path }}"
     - name: Create new openstack keypair
       openstack.cloud.keypair:
-        name: "{{ deploy_rhelai_key_name }}"
+        name: "{{ gpu_validation_key_name }}"
         state: replace
-        ca_cert: "{{ deploy_rhelai_ca_cert_path }}"
+        ca_cert: "{{ gpu_validation_ca_cert_path }}"
       register: keypair_result
 
     - name: Write new ssh private key to file
       ansible.builtin.copy:
         content: "{{ keypair_result.keypair.private_key }}\n"
-        dest: "{{ deploy_rhelai_private_key_file }}"
+        dest: "{{ gpu_validation_private_key_file }}"
         mode: "0600"
       no_log: true

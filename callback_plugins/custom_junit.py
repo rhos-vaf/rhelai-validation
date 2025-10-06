@@ -18,12 +18,12 @@ class CallbackModule(JunitCallbackModule):
 
         # Enforce our own defaults for when ENVVARs are inconvenient
         self._output_dir = os.getenv('JUNIT_OUTPUT_DIR', '/var/lib/AnsibleTests/external_files/')
-        self._test_case_prefix = os.getenv('JUNIT_TEST_CASE_PREFIX', 'rhelai-validation : TEST')
+        self._test_case_prefix = os.getenv('JUNIT_TEST_CASE_PREFIX', 'gpu-validation : TEST')
         self._fail_on_ignore = os.getenv('JUNIT_FAIL_ON_IGNORE', 'true')  # this is needed because we use "ignore_errors" on assertion tasks to run as many as possible
         self._hide_task_arguments = os.getenv('JUNIT_HIDE_TASK_ARGUMENTS', 'true')
 
     def _set_class_and_name(self, tc):
-        tc.classname = 'rhoso_rhelai_validation'
+        tc.classname = 'rhoso_gpu_validation'
 
         if len(self._test_case_prefix) > 0 and re.search(self._test_case_prefix, tc.name):
             tc.name = tc.name.split(self._test_case_prefix)[-1]  # remove the test prefix and everything before it

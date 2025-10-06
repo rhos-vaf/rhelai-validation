@@ -1,0 +1,56 @@
+---
+- name: Overwrite DNS entries in /etc/resolv.conf if gpu_validation_dns_server is set
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    content: |
+      nameserver {{ gpu_validation_dns_server }}
+    mode: '0644'
+  when: gpu_validation_dns_server != ""
+
+- name: Install pciutils package
+  ansible.builtin.dnf:
+    use_backend: dnf4
+    name: pciutils
+    state: present
+
+- name: Ensure python3.12 is installed
+  ansible.builtin.dnf:
+    name: python3.12
+    state: present
+
+- name: Set up alternatives for python3
+  ansible.builtin.command:
+    cmd: "alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 120"
+  args:
+    creates: /etc/alternatives/python3
+
+- name: Set python3 alternative to /usr/bin/python3.12
+  ansible.builtin.alternatives:
+    name: python3
+    path: /usr/bin/python3.12
+
+- name: Set ansible to use python3.12
+  set_fact:
+    ansible_python_interpreter: /usr/bin/python3.12
+
+- name: Ensure python3.12-setuptools is installed
+  ansible.builtin.dnf:
+    name: python3.12-setuptools
+    state: present
+
+- name: Ensure python3.12-devel is installed
+  ansible.builtin.dnf:
+    name: python3.12-devel
+    state: present
+
+- name: Install pip package
+  ansible.builtin.dnf:
+    use_backend: dnf4
+    name: python3.12-pip
+    state: present
+
+- name: Copy scripts from local to RHEL AI machine
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/scripts"
+    dest: /tmp
+    mode: "1777"

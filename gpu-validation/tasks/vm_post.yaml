@@ -1,0 +1,4 @@
+---
+- name: VM Cleanup (Post)
+  ansible.builtin.import_tasks: vm_cleanup.yaml
+  when: gpu_validation_enabled | bool and gpu_validation_post_cleanup_enabled | bool
