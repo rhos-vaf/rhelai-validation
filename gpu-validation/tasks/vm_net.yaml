@@ -84,3 +84,4 @@
       floating_ip_address: "{{ gpu_validation_floating_ip }}"
       floating_network_id: "{{ public_network_info.networks[0].id }}"
     ca_cert: "{{ gpu_validation_ca_cert_path }}"
+  when: create_floating_ip | bool

@@ -5,5 +5,18 @@ Description=vllm model serve service
 WantedBy=multi-user.target default.target
 
 [Service]
-ExecStart=/home/cloud-user/.local/bin/vllm serve {{ gpu_validation_model_name | quote }} --tensor-parallel-size {{ gpu_validation_num_gpus }} --port 8000
-Restart=always
+ExecStart=podman run \
+    {{ gpu_validation_workload_device_opts }} \
+    {{ gpu_validation_workload_security_opts }} \
+    {{ gpu_validation_workload_shm_size }} \
+    {{ gpu_validation_workload_userns }} \
+    {{ gpu_validation_workload_additional_opts }} \
+    -v {{ gpu_validation_workload_cache_dir }}:{{ gpu_validation_workload_cache_mount_path }}:Z \
+{% if gpu_validation_model_download_hf_token %}
+    --env "HUGGING_FACE_HUB_TOKEN={{ gpu_validation_model_download_hf_token | quote }}" \
+{% endif %}
+    {{ gpu_validation_workload_additional_env }} \
+    -p 8000:8000 \
+    {{ gpu_validation_workload_container_image }} \
+    --model {{ gpu_validation_model_name | quote }} \
+    --tensor-parallel-size {{ gpu_validation_num_gpus }}

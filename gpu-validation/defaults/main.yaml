@@ -10,11 +10,11 @@ gpu_validation_image_name: gpu-validation
 # [string] Flavor to use when creating the VM
 gpu_validation_flavor_name: nvidia
 # [string] RAM value for the flavor
-gpu_validation_flavor_ram: 40960
+gpu_validation_flavor_ram: 16384
 # [string] CPU value for the flavor
-gpu_validation_flavor_vcpus: 8
+gpu_validation_flavor_vcpus: 4
 # [string] Disk value for the flavor
-gpu_validation_flavor_disk: 20
+gpu_validation_flavor_disk: 80
 # [string] Number of GPUs for the flavor
 gpu_validation_flavor_gpus: 1
 
@@ -41,19 +41,39 @@ gpu_validation_dns_server: 192.168.122.1
 gpu_validation_pci_devices:
   10de:27b8: 1
 
+# [string] libnvidia-container-toolkit version
+gpu_validation_libnvidia_container_toolkit_version_release: 1.17.8-1
+
 gpu_validation_model_tests_enabled: true  # Can be disabled for lighter CUDA-only sanity testing
-gpu_validation_model_name: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+gpu_validation_model_name: TinyLlama/TinyLlama-1.1B-Chat-v1.0  # RedHatAI/Llama-3.2-1B-Instruct-FP8 for RHAIIS
 # [string] (optional) HuggingFace token if required for download
 gpu_validation_model_download_hf_token:
-# [string] (optional) Model registry username if required for download
-gpu_validation_model_download_registry_username:
-# [string] (optional) Model registry password if required for download
-gpu_validation_model_download_registry_password:
-# [string] (optional) Model container tag to download
-gpu_validation_model_download_release: ''  # Set to '' for TinyLlama
-gpu_validation_model_download_repository_base: ''  # Set to '' if downloading from HuggingFace
+
 # [float] Performance threshholds
 gpu_validation_model_perf_max_avg_time_per_tok: !!float "0.03"
 gpu_validation_model_perf_max_avg_time_to_first_tok: !!float "0.3"
 
 gpu_validation_nvidia_repo_url: "https://developer.download.nvidia.com/compute/cuda/repos/rhel9/"
+
+# [string] Container image to use for model serving
+gpu_validation_workload_container_image: "docker.io/vllm/vllm-openai:latest"  # "registry.redhat.io/rhaiis/vllm-cuda-rhel9:3.0.0" for RHAIIS
+# [string] (optional) registry username if required for container image download
+gpu_validation_workload_registry_username:
+# [string] (optional) registry password if required for container image download
+gpu_validation_workload_registry_password:
+# [string] Cache directory path for model downloads
+gpu_validation_workload_cache_dir: "/home/cloud-user/.cache/workload"
+# [string] Cache mount path inside container
+gpu_validation_workload_cache_mount_path: "/root/.cache/huggingface"  # "/opt/app-root/src/.cache" for RHAIIS
+# [string] Container Device options
+gpu_validation_workload_device_opts: "--device nvidia.com/gpu=all"
+# [string] Container security options
+gpu_validation_workload_security_opts: "--security-opt=label=disable"
+# [string] Container options
+gpu_validation_workload_additional_opts: "--rm -it"
+# [string] Container user namespace option
+gpu_validation_workload_userns:  # "--userns=keep-id:uid=1001" for RHAIIS
+# [string] Shared memory size
+gpu_validation_workload_shm_size: "--shm-size=4g"
+# [string] Additional environment variables
+gpu_validation_workload_additional_env: "--env=HF_HUB_OFFLINE=0 --env=VLLM_NO_USAGE_STATS=1"
