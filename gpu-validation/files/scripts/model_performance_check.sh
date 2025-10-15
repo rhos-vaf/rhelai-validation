@@ -1,14 +1,22 @@
 #!/bin/bash
 
+URL="${URL:-http://localhost:8000}"
 MODEL_NAME="${MODEL_NAME:-TinyLlama/TinyLlama-1.1B-Chat-v1.0}"
+TOKEN="${TOKEN:-}"
 
 function do_curl {
     if [ "$1" == "chat" ]; then
-        CURL_OUTPUT=$(curl -s --show-error -f -X POST "http://localhost:8000/v1/chat/completions" \
-            -H "Content-Type: application/json" \
-            --data '{"model": "'"${MODEL_NAME}"'","messages": [{"role": "user","content": "Who am I speaking to?"}]}')
+        local curl_args=(
+            -k -s --show-error -f -X POST "${URL}/v1/chat/completions"
+            -H "Content-Type: application/json"
+        )
+        if [ -n "$TOKEN" ]; then
+            curl_args+=(-H "Authorization: Bearer $TOKEN")
+        fi
+        curl_args+=(--data '{"model": "'"${MODEL_NAME}"'","messages": [{"role": "user","content": "Who am I speaking to?"}]}')
+        CURL_OUTPUT=$(curl "${curl_args[@]}")
     elif [ "$1" == "metrics" ]; then
-        CURL_OUTPUT=$(curl -s --show-error -f localhost:8000/metrics)
+        CURL_OUTPUT=$(curl -k -s --show-error -f "${URL}/metrics")
     fi
     # shellcheck disable=SC2181
     if [ $? -ne 0 ]; then
