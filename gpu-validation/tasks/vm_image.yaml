@@ -36,4 +36,6 @@
       "pci_passthrough:alias": "gpu-l4:{{ gpu_validation_flavor_gpus }}"
       "hw:pci_numa_affinity_policy": "preferred"
       "hw:hide_hypervisor_id": "true"
+      "hw:kvm_hidden": "true"
+      "hw:cpu_model": "host-passthrough"
     ca_cert: "{{ gpu_validation_ca_cert_path }}"
