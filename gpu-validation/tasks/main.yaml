@@ -4,8 +4,14 @@
   ansible.builtin.import_tasks: setup.yaml
 
 - name: Nvidia Setup
-  become: true
-  ansible.builtin.import_tasks: nvidia_setup.yaml
+  ansible.builtin.include_role:
+    name: nvidia_driver
+    apply:
+      become: true
+  vars:
+    nvidia_driver_module_version: "latest-dkms"
+    nvidia_driver_install_management_library: false
+
 
 - name: Check GPUs
   ansible.builtin.import_tasks: gpus.yaml
