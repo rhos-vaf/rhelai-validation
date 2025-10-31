@@ -41,9 +41,6 @@ gpu_validation_dns_server: 192.168.122.1
 gpu_validation_pci_devices:
   10de:27b8: 1
 
-# [string] libnvidia-container-toolkit version
-gpu_validation_libnvidia_container_toolkit_version_release: 1.17.8-1
-
 gpu_validation_model_tests_enabled: true  # Can be disabled for lighter CUDA-only sanity testing
 gpu_validation_model_name: TinyLlama/TinyLlama-1.1B-Chat-v1.0  # RedHatAI/Llama-3.2-1B-Instruct-FP8 for RHAIIS
 # [string] (optional) HuggingFace token if required for download
@@ -52,8 +49,6 @@ gpu_validation_model_download_hf_token:
 # [float] Performance threshholds
 gpu_validation_model_perf_max_avg_time_per_tok: !!float "0.03"
 gpu_validation_model_perf_max_avg_time_to_first_tok: !!float "0.3"
-
-gpu_validation_nvidia_repo_url: "https://developer.download.nvidia.com/compute/cuda/repos/rhel9/"
 
 # [string] Container image to use for model serving
 gpu_validation_workload_container_image: "docker.io/vllm/vllm-openai:latest"  # "registry.redhat.io/rhaiis/vllm-cuda-rhel9:3.0.0" for RHAIIS
