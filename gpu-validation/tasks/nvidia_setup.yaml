@@ -1,6 +1,0 @@
----
-- name: Nvidia Driver
-  ansible.builtin.import_tasks: nvidia_driver.yaml
-
-- name: Nvidia Container Tools
-  ansible.builtin.import_tasks: nvidia_container_tools.yaml
